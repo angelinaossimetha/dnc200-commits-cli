@@ -24,5 +24,24 @@ namespace dnc200_commits_cliTest
             int actualCommits = Program.GetCommits(userName, repoName);
             Assert.Equal(expectedCommits, actualCommits);
         }
+
+        [Fact]
+        public void GetCommits_UserOne()
+        {
+            string userName = "angelinaossimetha";
+            int expectedCommits = 28;
+            int actualCommits = Program.GetCommits(userName);
+            Assert.Equal(expectedCommits, actualCommits);
+        }
+
+        [Fact]
+        public void GetCommits_RepoOne()
+        {
+            string repoName = "dnc100-mortgage-calculator";
+            string userName = "angelinaossimetha";
+            int expectedCommits = 3;
+            int actualCommits = Program.GetCommits(userName, repoName);
+            Assert.Equal(expectedCommits, actualCommits);
+        }
     }
 }

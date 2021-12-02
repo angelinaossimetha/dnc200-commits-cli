@@ -9,25 +9,26 @@ using System.Threading.Tasks;
 
 namespace dnc200_commits_cli
 {
-    public class Program
+    public static class Program
     {
 
 
-        public void  GetCommits(String username, String repoName = "")
-        {
+        public  static int GetCommits(String username, String repoName = "")
+        { 
+            if (username == "" && repoName == "") { return 0; }
             int count = 0;
             string url = "";
             string responseBody = "";
-            //HttpClient client = new HttpClient();
+        
             
             if (repoName != "")
             {
-                url = $"https://api.github.com/repos/{username}/{repoName}/events/public";
+                url = $"https://api.github.com/repos/{username}/{repoName}/events";
             } else
             {
                 url = $"https://api.github.com/users/{username}/events/public";
             }
-            //Console.WriteLine(url);
+          
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -42,18 +43,15 @@ namespace dnc200_commits_cli
                         responseBody = response.Content.ReadAsStringAsync().Result;
                     }
                 }
-                //HttpResponseMessage response = client.GetAsync(url).Result;
-               // Console.WriteLine(response.EnsureSuccessStatusCode());
-                //responseBody = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(responseBody);
+                
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
             }
-            Console.WriteLine("YES!!");
-           List<Event> myDeserializedClass = JsonConvert.DeserializeObject<List<Event>>(responseBody);
+           
+            List<Event> myDeserializedClass = JsonConvert.DeserializeObject<List<Event>>(responseBody);
             foreach (Event e in myDeserializedClass)
             {
              if (e.type == "PushEvent")
@@ -61,7 +59,7 @@ namespace dnc200_commits_cli
                     count += e.payload.commits.Count;
               }
             }
-            Console.WriteLine(count);
+            return count;
           
         }
         public static void Main(string[] args)
@@ -73,7 +71,6 @@ namespace dnc200_commits_cli
             Console.WriteLine("Would you like to search for a repository or a single user commits");
             Console.WriteLine("Type U for user or R for repository");
 
-            Program program = new Program();
             string search = Console.ReadLine().ToUpper();
             int numCommits;
 
@@ -88,19 +85,14 @@ namespace dnc200_commits_cli
                 string username = Console.ReadLine().ToLower(); 
 
                 if (search == "U") {
-                    Console.WriteLine("Hello 1");
-                    //numCommits = program.GetCommits(username);
-                    program.GetCommits(username);
-                    //Console.WriteLine($"Number of commits for {username}: {numCommits}");
-                    Console.WriteLine("Hello 2");
+                    numCommits = Program.GetCommits(username);
+                    Console.WriteLine($"Number of commits for {username} in the past 90 days: {numCommits}");
+                    
                 } else {
-                    Console.WriteLine("Hola 1");
                     Console.WriteLine("Type you Github repository:");
                     String repoName = Console.ReadLine().ToLower();
-                    //numCommits = program.GetCommits(username, repoName);
-                    program.GetCommits(username, repoName);
-                    // Console.WriteLine($"Number of commits for {repoName}: {numCommits}");
-                    Console.WriteLine("Hola 2");
+                    numCommits = Program.GetCommits(username, repoName);
+                    Console.WriteLine($"Number of commits for {repoName} in the past 90 days: {numCommits}");
                 } 
             } catch (Exception ex)
             {
